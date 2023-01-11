@@ -32,16 +32,7 @@ class LakeService {
 
     static updateLake(lake) {
         return $.ajax({
-            url: this.url + `/${lake._id}`,
-            dataType: 'json',
-            data: JSON.stringify(lake),
-            contentType: 'application/json',
-            type: 'PUT'
-        });
-    }
-    static updateBoatRamp(lake, ramp) {
-        return $.ajax({
-            url: this.url + `/${lake._id}`,
+            url: this.url + `/${lake.id}`,
             dataType: 'json',
             data: JSON.stringify(lake),
             contentType: 'application/json',
@@ -49,7 +40,7 @@ class LakeService {
         });
     }
 
-    static deleteLake (id){
+    static deleteRamp (id){
         return $.ajax({
             url: this.url + `/${id}`,
             type: "DELETE"
@@ -61,52 +52,99 @@ class LakeService {
 
 class DOMManager {
     static lakes;
-    static boatRampName;
-    
+
     static getAllLakes(){
         LakeService.getAllLakes().then(lakes => this.render(lakes));
     }
+
+    static createLake(name) {
+        LakeService.createLake(new Lake(name))
+        .then (() => {
+            return LakeService.getAllLakes();
+        })
+        .then((lakes) => this.render(lakes))
+    }
+
+    static deleteRamp(id) {
+        LakeService.deleteRamp(id)
+        .then(()=> {
+            return LakeService.getAllLakes();
+        })
+        .then((lakes) => this.render(lakes));
+    }
+
+    // 
+    static addLake(id) {
+        
+        for (let lake of this.lakes) {
+            if(lake.id == id) {
+                lake.boatRamps.push(new BoatRamp($(`#${lake.id}-boatRamp-name`).val(), $(`#${lake.id}-boatRamp-location`).val()));
+                LakeService.updateLake(lake)
+                .then(() => {
+                    return LakeService.getAllLakes();
+                })
+                .then((lakes) => this.render(lakes));
+            }
+        }
+    }
+
+    static deleteLake(lakeId, boatRampId) {
+        for (let lake of this.lakes) {
+            if (lake.id == lakeId) {
+                for (let boatRamp of lake.boatRamps){
+                    if( boatRamp.id == boatRampId){
+                        lake.boatRamps.splice(lake.boatRamps.indexOf(boatRamp), 1);
+                        LakeService.updateLake(lake)
+                        .then(() => {
+                            return LakeService.getAllLakes();
+                        })
+                        .then((lakes) => this.render(lakes));
+                    }
+                }
+            }
+        }
+    }
+
 
     static render(lakes) {
         this.lakes = lakes;
         $('#app').empty();
         for(let lake of lakes) {
             $('#app').prepend(
-                `<div id="${lake._id}" class = "card">
-                    <div class="card-header">
-                        <h2>${lake.name}</h2>
-                        <button class="btn btn-danger" onclick= "DOMManager.deleteLake('${lake._id}')">delete</button>
-                        </div>
-                            <div class="card-body">
-                                <div class="card"
-                                    <div class="row">
-                                    <div class="col-sm">
-                                        <input type= "text" id="${lake._id}-boatRamp-name" class="form-control" placeholder="Boat Ramp Name">
-                                    </div>
-                                
-                                    <div class = "col-sm">
-                                    <input type= "text" id="${lake._id}-boatRamp-location" class="form-control" placeholder="Boat Ramp location">
-                                    </div>
-                                    </div>
-                                    <button id ="${lake._id}-new-boatRamp"-new-boatRamp" onclick="LakeService.updateBoatRamp('${lake._id}')" class="btn btn-primary form-control">Add Boat Ramp</button>
+                `    <div id="${lake.id}" class = "card">
+                <div class="card-header">
+                    <h2>${lake.name}</h2>
+                    <button class="btn btn-danger" onclick= "DOMManager.deleteRamp('${lake.id}')">delete</button>
+                    
+                        <div class="card-body">
+                            <div class="card">
+                                <div class="row">
+                                <div class="col-sm">
+                                    <input type= "text" id="${lake.id}-boatRamp-name" class="form-control" placeholder="Boat Ramp Name">
                                 </div>
+                            
+                                <div class = "col-sm">
+                                <input type= "text" id="${lake.id}-boatRamp-location" class="form-control" placeholder="Boat Ramp location">
+                                </div>
+                                </div>
+                                <button id ="${lake.id}-new-boatRamp"-new-boatRamp" onclick="DOMManager.addLake('${lake.id}')" class="btn btn-primary form-control">Add Boat Ramp</button>
+                        
                             </div>
-                 </div>
-                 <br>
+                        </div>
+                </div>
+            </div>
+             <br>
                 `
             );
-
-
-            for (let boatRamp of lake.boatRamps) {
-                $(`#${lake._id}`).find('.card-body').append(
-                    `<p>
-                    <span id="name-${boatRamp._id}"><strong>Name: </strong> ${boatRamp.name}</span>
-                    <span id="location-${boatRamp._id}"><strong>Name: </strong> ${boatRamp.location}</span>
-                    <button class="btn btn-danger" onclick="DOMManager.deleteLake('${lake._id}', '${boatRamp._id}')">Delete Lake</button>
-                    </p>
-                    `
-                )
-                };
+        for (let boatRamp of lake.boatRamps) {
+            $(`#${lake.id}`).find('.card-body').append(
+                `<p>
+                <span id="name-${boatRamp.id}"><strong>Name: </strong> ${boatRamp.name}</span>
+                <span id="location-${boatRamp.id}"><strong>Name: </strong> ${boatRamp.location}</span>
+                <button class="btn btn-danger" onclick="DOMManager.deleteLake(${lake.id}, ${boatRamp.id})">Delete Lake</button>
+                </p>`
+                );
+                }
 
 
             
@@ -119,5 +157,10 @@ class DOMManager {
         }
     }
 }
+
+$('#create-New-Lake').on('click',() => {
+    DOMManager.createLake($('#new-Lake-Name').val());
+    $('#new-Lake-Name').val('')
+});
 
 DOMManager.getAllLakes();
