@@ -8,19 +8,57 @@
     <link href="/styles.css" rel="stylesheet">
     <title>Lake Locator</title>
 </head>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input type="text" id="new-Lake-Name" class="form-control" aria-label="Search"> 
+          <button id="create-New-Lake" class="btn btn-outline-success form-control">Add New Lake</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+ 
+  
+  
 <body class="container">
-    <div id="newLake" class="jumbotron">
-        <h2>New Lake</h2>
-        <input type="text" id="newLakeName" class="form-control"> 
+    <div id="new-lake" class="jumbotron">
+        <h2>Current Lakes</h2>
         <br>
-        <button id="createNewLake" class="btn btn-outline-success form-control">Add New Lake</button>
+        
     </div>
 
 
-    <div id="app">
+    <div id="app" class="opacity-75 my-custom-scrollbar my-custom-scrollbar-primary"></div>
 
 
-    </div>
 
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/index.js"></script>
